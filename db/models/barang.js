@@ -1,7 +1,6 @@
-import { Sequelize, DataTypes } from "sequelize";
-import connection from "./connection.js";
+import { DataTypes } from "sequelize";
 
-const Barang = connection.define('Barang', {
+export default {
     id: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -20,8 +19,4 @@ const Barang = connection.define('Barang', {
         type: DataTypes.TEXT,
         allowNull: false
     }
-}, { tableName: 'barang' })
-
-
-Barang.sync({ force: true })
-export default Barang
+}
