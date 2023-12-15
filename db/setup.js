@@ -1,7 +1,7 @@
-import sequelize from "./index.js";
+import { Connection } from "./index.js";
 
 async function setup() {
-    await sequelize.sync({ force: true })
+    await Connection.sync({ force: true })
 }
 
 setup();

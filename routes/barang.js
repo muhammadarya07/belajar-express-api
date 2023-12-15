@@ -1,26 +1,45 @@
 import express from 'express'
-import { Barang } from '../db/index.js';
+import { Barang, Connection } from '../db/index.js';
 import checkValidator from '../helpers/validator/validator.js';
 import schema from '../helpers/validator/schema/barang.js';
+
 var router = express.Router();
 
 /* GET barang listing. */
 router.get('/', async function (req, res, next) {
-	return res.json(Barang.findAll())
+	// cek apakah berhasil koneksi
+	try {
+		await Connection.authenticate()
+
+		const datas = {
+			status: 'success',
+			pesan: 'Berhasil mendapatkan data',
+			data: Barang.findAll()
+		}
+
+		res.status(200)
+		return res.json(datas)
+	} catch (err) {
+		console.error(err)
+		res.status(500)
+		return res.json({
+			status: 'failed',
+			pesan: 'Terdapat kesalahan pada server',
+			data: {}
+		})
+	}
+
 });
 
-/* POST barang */
+/* POST create barang */
 router.post('/create', async function (req, res) {
-	const data = {
-		nama: req.body.nama,
-		harga: parseFloat(req.body.harga),
-		keterangan: req.body.keterangan
-	}
-	const result = checkValidator(schema, data)
+	const { nama, harga, keterangan } = req.body
+
+	const result = checkValidator(schema, { nama: nama, harga: parseFloat(harga), keterangan })
 	if (result === true) {
-		const product = await Barang.create(data)
+		const product = await Barang.create({ nama: nama, harga: parseFloat(harga), keterangan })
 		res.status(201)
-		return res.send("Berhasil")
+		return res.json({ status: 'success', pesan: 'Berhasil menambahkan barang baru' })
 	}
 	// gagal
 	res.status(400)
